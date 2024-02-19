@@ -1,4 +1,4 @@
-# Flashcards Maker
+# Flashcard Maker
 
 A web app based on streamlit deployed at [https://flashcard-maker.streamlit.app](https://flashcard-maker.streamlit.app)
 
