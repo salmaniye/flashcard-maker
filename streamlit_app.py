@@ -46,7 +46,9 @@ with st.sidebar:
         split_qa = np.array_split(qa_df_rand,div_days) # split it into days
 
 # ---------------- Main page ----------------
-
+title_column = st.container()
+with title_column:
+    st.title("Flashcard Maker")
 tab1, tab2 = st.tabs(["Flashcards", "Search engine"])
 
 with tab1:
