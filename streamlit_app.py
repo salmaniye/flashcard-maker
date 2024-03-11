@@ -34,14 +34,14 @@ if "q_no_temp" not in st.session_state:
 # ---------------- SIDEBAR ----------------
 with st.sidebar:
     uploaded_csv = st.file_uploader("Choose a CSV file", type="csv")
-
+    uploaded_csv = 1
     if uploaded_csv:
-        qa_df = pd.read_csv(uploaded_csv) # load questions and answers from CSV file
+        qa_df = pd.read_csv("GRE_VOCAB.csv") # load questions and answers from CSV file
         
         qa_df_rand = qa_df.sample(frac=1, random_state=2).reset_index(drop=True) # randomize with set random state
 
-        div_days = st.number_input('Number of days to divide the questions on: ', value=48)
-        st.write('The current number of days is ', div_days)
+        div_days = st.number_input('Number of splits to divide the questions on: ', value=48)
+        # st.write('The current number of splits is ', div_days)
 
         split_qa = np.array_split(qa_df_rand,div_days) # split it into days
 
@@ -49,28 +49,44 @@ with st.sidebar:
 title_column = st.container()
 with title_column:
     st.title("Flashcard Maker")
-tab1, tab2 = st.tabs(["Flashcards", "Search engine"])
+tab1, tab3, tab2 = st.tabs(["Flashcards", "Current Split's Questions", "Search engine"])
 
 with tab1:
     if uploaded_csv:
         # st.title("Product Owner Interview Questions Flashcards")
         no = len(qa_df)
         st.caption("There are currently " + str(no) + " questions in the database")
-        
-        day_number = st.slider('Day Number', 1, div_days, 1)
-        split_qa_rand = split_qa[day_number-1].reset_index(drop=True)
 
+with st.sidebar:
+    if uploaded_csv:        
+        day_number = st.number_input(f'Choose split number (max {div_days})', min_value=1, max_value=div_days, value="min")
+        split_qa_rand = split_qa[day_number-1].reset_index(drop=True)
+        
         # Randomize between words and definitions
+        agree_to_combine_prev_days = st.checkbox("Do you want to combine with previous splits?")
+
+        if agree_to_combine_prev_days:
+            first_day = st.number_input('Combine from which split?', min_value=1, max_value=day_number)
+            st.caption(f'You are now selecting between split {first_day} and split {day_number}')
+            split_qa_rand = pd.concat(split_qa[(first_day-1):day_number])
+        
         agree_to_randomize = st.checkbox("Do you want to randomize between questions and answers (i.e. some answers become questions)?")
+        
         if agree_to_randomize:
+            seed_val = st.number_input('Seed for randomizing ', min_value=1, value=48)
             split_qa_rand.iloc[:,0] = 'Question: ' + split_qa_rand.iloc[:,0].astype(str)
             split_qa_rand.iloc[:,1] = 'Answer: ' + split_qa_rand.iloc[:,1].astype(str)
             # default seed 48
-            split_qa_rand = split_qa_rand.apply(np.random.default_rng(seed=32).permutation,axis=1,result_type='expand').set_axis(split_qa_rand.columns,axis=1)
-        
-        with st.expander(f"See all questions for day {day_number}"):
-            st.write(split_qa_rand)
+            split_qa_rand = split_qa_rand.apply(np.random.default_rng(seed=seed_val).permutation,axis=1,result_type='expand').set_axis(split_qa_rand.columns,axis=1)
 
+        
+with tab3:
+    if uploaded_csv:
+        # with st.expander(f"See all questions for split {day_number}"):
+        st.write(split_qa_rand)
+
+with tab1:
+    if uploaded_csv:
         # ---------------- Questions & answers logic ----------------
         col1, col2 = st.columns(2)
         with col1:
@@ -116,7 +132,7 @@ with tab2:
         df = qa_df
 
         # Use a text_input to get the keywords to filter the dataframe
-        text_search = st.text_input("Search in questions and answers from all days", value="")
+        text_search = st.text_input("Search in questions and answers from all splits", value="")
 
         # Filter the dataframe using masks
         m1 = df.iloc[:,0].str.contains(text_search, case=False)

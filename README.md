@@ -16,3 +16,11 @@ I kept the question and answer reveal mechanisms as well as the search engine.
 ## CSV File requirements
 
 The CSV file must contain only 2 columns, the first column should be for questions, and the second column for answers.
+
+## Change log
+
+11.03.2024
+- Renamed "days" into "splits"
+- Added feature to combine with previous splits, along with option to choose first split
+- Moved some UI elements to the sidebar
+- Moved current split's questions to its own tab
