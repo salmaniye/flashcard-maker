@@ -5,7 +5,7 @@ A web app based on streamlit deployed at [https://flashcard-maker.streamlit.app]
 This web app was built on Streamlit and adapted from: https://github.com/TomJohnH/streamlit-po
 I kept the question and answer reveal mechanisms as well as the search engine.
 
-## Changes:
+## Changes from original repo:
 
 - Removed CSS
 - Added option for the user to create their own flashcards by uploading a CSV dataset file
