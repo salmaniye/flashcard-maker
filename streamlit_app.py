@@ -6,7 +6,7 @@ import pandas as pd
 
 # -------------- APP CONFIG ---------------
 
-st.set_page_config(page_title="Flashcards Maker", page_icon="📖")
+st.set_page_config(page_title="Flashcard Maker", page_icon="📖")
 
 # ---------------- functions ----------------
 
@@ -34,9 +34,8 @@ if "q_no_temp" not in st.session_state:
 # ---------------- SIDEBAR ----------------
 with st.sidebar:
     uploaded_csv = st.file_uploader("Choose a CSV file", type="csv")
-    uploaded_csv = 1
     if uploaded_csv:
-        qa_df = pd.read_csv("GRE_VOCAB.csv") # load questions and answers from CSV file
+        qa_df = pd.read_csv(uploaded_csv) # load questions and answers from CSV file
         
         qa_df_rand = qa_df.sample(frac=1, random_state=2).reset_index(drop=True) # randomize with set random state
 
